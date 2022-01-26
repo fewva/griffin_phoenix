@@ -14,12 +14,6 @@ class AppImages {
 }
 
 class AppIcon extends StatelessWidget {
-  final String icon;
-  final Color? color;
-  final double? height;
-  final double? width;
-  final bool isPng;
-
   const AppIcon({
     Key? key,
     required this.icon,
@@ -28,6 +22,12 @@ class AppIcon extends StatelessWidget {
     this.width,
     this.isPng = false,
   }) : super(key: key);
+
+  final String icon;
+  final Color? color;
+  final double? height;
+  final double? width;
+  final bool isPng;
 
   @override
   Widget build(BuildContext context) {
