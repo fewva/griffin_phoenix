@@ -11,6 +11,7 @@
 // ignore_for_file: type=lint
 
 import 'package:auto_route/auto_route.dart' as _i5;
+import 'package:flutter/cupertino.dart' as _i7;
 import 'package:flutter/material.dart' as _i6;
 
 import '../../presentation/shared/bottom_navigation.dart' as _i4;
@@ -62,7 +63,7 @@ class AppRouter extends _i5.RootStackRouter {
 /// generated route for
 /// [_i1.SplashScreen]
 class SplashScreenRoute extends _i5.PageRouteInfo<SplashScreenRouteArgs> {
-  SplashScreenRoute({_i6.Key? key, String? text})
+  SplashScreenRoute({_i7.Key? key, String? text})
       : super(SplashScreenRoute.name,
             path: '/splash-screen',
             args: SplashScreenRouteArgs(key: key, text: text));
@@ -73,7 +74,7 @@ class SplashScreenRoute extends _i5.PageRouteInfo<SplashScreenRouteArgs> {
 class SplashScreenRouteArgs {
   const SplashScreenRouteArgs({this.key, this.text});
 
-  final _i6.Key? key;
+  final _i7.Key? key;
 
   final String? text;
 
@@ -95,7 +96,7 @@ class SelectRoleViewRoute extends _i5.PageRouteInfo<void> {
 /// generated route for
 /// [_i3.LessonsView]
 class LessonsViewRoute extends _i5.PageRouteInfo<LessonsViewRouteArgs> {
-  LessonsViewRoute({_i6.Key? key, int? groupId, int? teacherId})
+  LessonsViewRoute({_i7.Key? key, int? groupId, int? teacherId})
       : super(LessonsViewRoute.name,
             path: '/lessons-view',
             args: LessonsViewRouteArgs(
@@ -107,7 +108,7 @@ class LessonsViewRoute extends _i5.PageRouteInfo<LessonsViewRouteArgs> {
 class LessonsViewRouteArgs {
   const LessonsViewRouteArgs({this.key, this.groupId, this.teacherId});
 
-  final _i6.Key? key;
+  final _i7.Key? key;
 
   final int? groupId;
 

@@ -11,7 +11,7 @@ class BottomNavigation extends StatefulWidget {
 }
 
 class _BottomNavigationState extends State<BottomNavigation> {
-  List _pages = [
+  final List _pages = const [
     LessonsView(groupId: 12244),
     LessonsView(groupId: 12244),
   ];
@@ -31,13 +31,16 @@ class _BottomNavigationState extends State<BottomNavigation> {
       bottomNavigationBar: Container(
         decoration: Theme.of(context).isDarkTheme
             ? null
-            : BoxDecoration(boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadowColor.withOpacity(0.3),
-                  blurRadius: 18,
-                )
-              ]),
+            : BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.shadowColor.withOpacity(0.3),
+                    blurRadius: 18,
+                  )
+                ],
+              ),
         child: BottomNavigationBar(
+          onTap: _changeIndex,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.schedule_outlined),

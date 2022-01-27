@@ -33,6 +33,9 @@ Lesson _$LessonFromJson(Map<String, dynamic> json) => Lesson(
       building: json['building'],
       noteUuid: json['note_uuid'] as String?,
       note: json['note'] as String?,
+      groups: (json['groups'] as List<dynamic>?)
+          ?.map((e) => Group.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$LessonToJson(Lesson instance) => <String, dynamic>{
@@ -61,4 +64,5 @@ Map<String, dynamic> _$LessonToJson(Lesson instance) => <String, dynamic>{
       'building': instance.building,
       'note_uuid': instance.noteUuid,
       'note': instance.note,
+      'groups': instance.groups,
     };

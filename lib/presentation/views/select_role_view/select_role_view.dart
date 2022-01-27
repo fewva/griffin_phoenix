@@ -1,10 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:griffin_phoenix/models/role/i_role.dart';
+import 'package:griffin_phoenix/internal/domain/services/select_role/i_select_role_service.dart';
+import 'package:griffin_phoenix/models/role/irole.dart';
 import 'package:griffin_phoenix/presentation/views/select_role_view/select_role_viewmodel.dart';
 import 'package:griffin_phoenix/theme/app_colors.dart';
 import 'package:griffin_phoenix/theme/app_icons.dart';
+import 'package:provider/provider.dart';
 import 'package:stacked/stacked.dart';
 
 const TextStyle _roleTextStyle = TextStyle(
@@ -27,7 +29,9 @@ class SelectRoleView extends StatelessWidget {
           builder: (context, constraints) {
             return SingleChildScrollView(
               child: ViewModelBuilder<SelectRoleViewModel>.reactive(
-                viewModelBuilder: () => SelectRoleViewModel(),
+                viewModelBuilder: () => SelectRoleViewModel(
+                  context.read<ISelectRoleService>(),
+                ),
                 onModelReady: (model) => model.onReady(),
                 builder: (context, model, child) {
                   return SizedBox(
@@ -207,9 +211,9 @@ class ExpandableTextField extends StatefulWidget {
 
   final TextEditingController controller;
   final String hintText;
-  final List<Role> items;
+  final List<IRole> items;
   final ValueChanged<String> onChanged;
-  final ValueChanged<Role> onSelect;
+  final ValueChanged<IRole> onSelect;
 
   @override
   State<ExpandableTextField> createState() => _ExpandableTextFieldState();

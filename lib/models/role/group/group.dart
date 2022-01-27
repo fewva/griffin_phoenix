@@ -1,12 +1,14 @@
-import 'package:griffin_phoenix/models/role/i_role.dart';
+import 'package:griffin_phoenix/models/role/irole.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'group.g.dart';
 
 @JsonSerializable()
-class Group implements Role {
+class Group implements IRole {
   @override
   final int? id;
+  @override
+  final int? lastScheduleHash;
   @override
   final String? name;
   final int? facultyid;
@@ -19,15 +21,17 @@ class Group implements Role {
     this.specialtyid,
     this.name,
     this.course,
+    this.lastScheduleHash,
   });
 
   @override
   String toString() {
-    return 'Group(id: $id, facultyid: $facultyid, specialtyid: $specialtyid, name: $name, course: $course)';
+    return 'Group(id: $id, facultyid: $facultyid, specialtyid: $specialtyid, name: $name, course: $course lastScheduleHash: $lastScheduleHash)';
   }
 
   factory Group.fromJson(Map<String, dynamic> json) => _$GroupFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$GroupToJson(this);
 
   Group copyWith({
