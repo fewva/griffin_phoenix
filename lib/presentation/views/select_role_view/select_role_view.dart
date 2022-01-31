@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:griffin_phoenix/internal/domain/services/select_role/i_select_role_service.dart';
+import 'package:griffin_phoenix/internal/utils/extensions/theme.dart';
 import 'package:griffin_phoenix/models/role/irole.dart';
 import 'package:griffin_phoenix/presentation/views/select_role_view/select_role_viewmodel.dart';
 import 'package:griffin_phoenix/theme/app_colors.dart';
@@ -21,7 +22,7 @@ class SelectRoleView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final isDarkTheme = Theme.of(context).isDarkTheme;
 
     return Scaffold(
       body: SafeArea(

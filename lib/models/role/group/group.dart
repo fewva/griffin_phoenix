@@ -40,6 +40,7 @@ class Group implements IRole {
     int? specialtyid,
     String? name,
     int? course,
+    int? lastScheduleHash,
   }) {
     return Group(
       id: id ?? this.id,
@@ -47,6 +48,7 @@ class Group implements IRole {
       specialtyid: specialtyid ?? this.specialtyid,
       name: name ?? this.name,
       course: course ?? this.course,
+      lastScheduleHash: lastScheduleHash ?? this.lastScheduleHash,
     );
   }
 }

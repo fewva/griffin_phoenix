@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:griffin_phoenix/internal/utils/extensions/theme.dart';
+import 'package:griffin_phoenix/models/role/group/group.dart';
+import 'package:griffin_phoenix/models/role/teacher/teacher.dart';
 import 'package:griffin_phoenix/presentation/views/lessons_view/lessons_view.dart';
 import 'package:griffin_phoenix/theme/app_colors.dart';
 
@@ -12,8 +14,8 @@ class BottomNavigation extends StatefulWidget {
 
 class _BottomNavigationState extends State<BottomNavigation> {
   final List _pages = const [
-    LessonsView(groupId: 12244),
-    LessonsView(groupId: 12244),
+    LessonsView(role: Group(id: 12244, lastScheduleHash: -1074417128)),
+    LessonsView(role: Teacher()),
   ];
 
   int _activeIndex = 0;

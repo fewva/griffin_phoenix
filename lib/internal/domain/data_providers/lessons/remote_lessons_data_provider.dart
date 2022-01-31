@@ -2,9 +2,9 @@ import 'package:griffin_phoenix/internal/domain/data_providers/lessons/i_lessons
 import 'package:griffin_phoenix/internal/domain/network/i_core_api.dart';
 import 'package:griffin_phoenix/models/dto/api_dto.dart';
 
-class NetworkLessonsDataProvider implements ILessonsDataProvider {
+class RemoteLessonsDataProvider implements ILessonsDataProvider {
   final ICoreApi _coreApi;
-  NetworkLessonsDataProvider(this._coreApi);
+  RemoteLessonsDataProvider(this._coreApi);
 
   @override
   Future<ApiDTO?> getGroupLessons({required int groupId, int? hash}) async {

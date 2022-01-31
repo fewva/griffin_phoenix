@@ -1,4 +1,5 @@
 import 'package:griffin_phoenix/internal/domain/services/data_storage/i_data_storage_service.dart';
+import 'package:griffin_phoenix/internal/utils/debug_print.dart';
 import 'package:griffin_phoenix/models/dto/role_dto.dart';
 import 'package:griffin_phoenix/models/lesson/lesson/lesson.dart';
 import 'package:griffin_phoenix/models/role/group/group.dart';
@@ -12,6 +13,7 @@ class HiveDataStorageService implements IDataStorageService {
   HiveDataStorageService({required this.path, required this.hive});
 
   Box? _rolesBox;
+  Box? _lessonsBox;
 
   @override
   Future<void> init() async => hive.init(path);
@@ -36,7 +38,13 @@ class HiveDataStorageService implements IDataStorageService {
 
   @override
   Future<List<Lesson>>? getGroupSchedule(int id) async {
-    return [];
+    _lessonsBox ??= await hive.openBox('lessons');
+
+    List res = await _lessonsBox!.get(id);
+
+    res = res.map((e) => Lesson.fromJson(Map.from(e))).toList();
+
+    return res as List<Lesson>;
   }
 
   @override
@@ -45,5 +53,28 @@ class HiveDataStorageService implements IDataStorageService {
   }
 
   @override
-  Future<void> saveSchedule(List<Lesson> schedule) async {}
+  Future<void> saveSchedule({
+    required IRole role,
+    required List<Lesson> schedule,
+  }) async {
+    _lessonsBox ??= await hive.openBox('lessons');
+    _rolesBox ??= await hive.openBox('roles');
+
+    // await _lessonsBox!.clear();
+    // await _rolesBox!.clear();
+
+    await _rolesBox!.put(
+      role.id,
+      RoleDTO(item: role, role: role is Group ? Roles.group : Roles.teacher)
+          .toJson(),
+    );
+
+    final s = schedule.map((e) => e.toJson()).toList();
+    printWarning('s: ${s}');
+
+    final aa = await _lessonsBox!.put(
+      role.id,
+      List.from(s),
+    );
+  }
 }

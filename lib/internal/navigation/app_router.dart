@@ -24,4 +24,4 @@ import 'package:griffin_phoenix/presentation/views/select_role_view/select_role_
 )
 class $AppRouter {}
 
-// flutter packages pub run build_runner build
+// flutter packages pub run build_runner build --delete-conflicting-outputs

@@ -1,6 +1,8 @@
 import 'package:griffin_phoenix/internal/constants/constants.dart';
+import 'package:griffin_phoenix/internal/domain/data_providers/lessons/hive_lessons_data_saver.dart';
 import 'package:griffin_phoenix/internal/domain/data_providers/lessons/i_lessons_data_provider.dart';
-import 'package:griffin_phoenix/internal/domain/data_providers/lessons/lessons_data_provider.dart';
+import 'package:griffin_phoenix/internal/domain/data_providers/lessons/local_lessons_data_provider.dart';
+import 'package:griffin_phoenix/internal/domain/data_providers/lessons/remote_lessons_data_provider.dart';
 import 'package:griffin_phoenix/internal/domain/data_providers/roles/i_roles_data_provider.dart';
 import 'package:griffin_phoenix/internal/domain/data_providers/roles/role_data_provider.dart';
 import 'package:griffin_phoenix/internal/domain/network/core_api.dart';
@@ -27,13 +29,16 @@ Future<RootContainer> initContainer() async {
       NetworkRolesDataProvider(iCoreApi);
 
   final ILessonsDataProvider iLessonsDataProvider =
-      NetworkLessonsDataProvider(iCoreApi);
+      RemoteLessonsDataProvider(iCoreApi);
 
   final IDataStorageService iDataStorageService =
       HiveDataStorageService(path: hivePath, hive: hive);
 
-  final ILessonsService iLessonsService =
-      LessonsService(iLessonsDataProvider, iDataStorageService);
+  final ILessonsService iLessonsService = LessonsService(
+    LocalLessonsDataProvider(iDataStorageService),
+    iLessonsDataProvider,
+    HiveLessonsDataSaver(iDataStorageService as HiveDataStorageService),
+  );
 
   final ISelectRoleService iSelectRoleServlce =
       SelectRoleService(iRolesDataProvider);

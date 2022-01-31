@@ -9,6 +9,9 @@ abstract class IDataStorageService {
   Future<List<Lesson>>? getGroupSchedule(int id);
   Future<List<Lesson>>? getTeacherSchedule(int id);
 
-  Future<void> saveSchedule(List<Lesson> schedule);
+  Future<void> saveSchedule({
+    required IRole role,
+    required List<Lesson> schedule,
+  });
   Future<void> saveRole(IRole role);
 }

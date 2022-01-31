@@ -11,9 +11,9 @@
 // ignore_for_file: type=lint
 
 import 'package:auto_route/auto_route.dart' as _i5;
-import 'package:flutter/cupertino.dart' as _i7;
 import 'package:flutter/material.dart' as _i6;
 
+import '../../models/role/irole.dart' as _i7;
 import '../../presentation/shared/bottom_navigation.dart' as _i4;
 import '../../presentation/shared/splash_screen.dart' as _i1;
 import '../../presentation/views/lessons_view/lessons_view.dart' as _i3;
@@ -38,12 +38,10 @@ class AppRouter extends _i5.RootStackRouter {
           routeData: routeData, child: const _i2.SelectRoleView());
     },
     LessonsViewRoute.name: (routeData) {
-      final args = routeData.argsAs<LessonsViewRouteArgs>(
-          orElse: () => const LessonsViewRouteArgs());
+      final args = routeData.argsAs<LessonsViewRouteArgs>();
       return _i5.AdaptivePage<dynamic>(
           routeData: routeData,
-          child: _i3.LessonsView(
-              key: args.key, groupId: args.groupId, teacherId: args.teacherId));
+          child: _i3.LessonsView(key: args.key, role: args.role));
     },
     BottomNavigationRoute.name: (routeData) {
       return _i5.AdaptivePage<dynamic>(
@@ -63,7 +61,7 @@ class AppRouter extends _i5.RootStackRouter {
 /// generated route for
 /// [_i1.SplashScreen]
 class SplashScreenRoute extends _i5.PageRouteInfo<SplashScreenRouteArgs> {
-  SplashScreenRoute({_i7.Key? key, String? text})
+  SplashScreenRoute({_i6.Key? key, String? text})
       : super(SplashScreenRoute.name,
             path: '/splash-screen',
             args: SplashScreenRouteArgs(key: key, text: text));
@@ -74,7 +72,7 @@ class SplashScreenRoute extends _i5.PageRouteInfo<SplashScreenRouteArgs> {
 class SplashScreenRouteArgs {
   const SplashScreenRouteArgs({this.key, this.text});
 
-  final _i7.Key? key;
+  final _i6.Key? key;
 
   final String? text;
 
@@ -96,27 +94,24 @@ class SelectRoleViewRoute extends _i5.PageRouteInfo<void> {
 /// generated route for
 /// [_i3.LessonsView]
 class LessonsViewRoute extends _i5.PageRouteInfo<LessonsViewRouteArgs> {
-  LessonsViewRoute({_i7.Key? key, int? groupId, int? teacherId})
+  LessonsViewRoute({_i6.Key? key, required _i7.IRole role})
       : super(LessonsViewRoute.name,
             path: '/lessons-view',
-            args: LessonsViewRouteArgs(
-                key: key, groupId: groupId, teacherId: teacherId));
+            args: LessonsViewRouteArgs(key: key, role: role));
 
   static const String name = 'LessonsViewRoute';
 }
 
 class LessonsViewRouteArgs {
-  const LessonsViewRouteArgs({this.key, this.groupId, this.teacherId});
+  const LessonsViewRouteArgs({this.key, required this.role});
 
-  final _i7.Key? key;
+  final _i6.Key? key;
 
-  final int? groupId;
-
-  final int? teacherId;
+  final _i7.IRole role;
 
   @override
   String toString() {
-    return 'LessonsViewRouteArgs{key: $key, groupId: $groupId, teacherId: $teacherId}';
+    return 'LessonsViewRouteArgs{key: $key, role: $role}';
   }
 }
 

@@ -9,6 +9,9 @@ import 'package:griffin_phoenix/internal/utils/extensions/date_time.dart';
 import 'package:griffin_phoenix/internal/utils/extensions/theme.dart';
 import 'package:griffin_phoenix/internal/utils/lesson_type_colors.dart';
 import 'package:griffin_phoenix/models/lesson/lesson/lesson.dart';
+import 'package:griffin_phoenix/models/role/group/group.dart';
+import 'package:griffin_phoenix/models/role/irole.dart';
+import 'package:griffin_phoenix/models/role/teacher/teacher.dart';
 import 'package:griffin_phoenix/presentation/shared/custom_calendar_date_picker.dart';
 import 'package:griffin_phoenix/presentation/shared/tapable.dart';
 import 'package:griffin_phoenix/presentation/views/lessons_view/lessons_view_model.dart';
@@ -20,28 +23,21 @@ import 'package:shimmer/shimmer.dart';
 import 'package:stacked/stacked.dart';
 
 class LessonsView extends StatelessWidget {
-  final int? groupId;
-  final int? teacherId;
+  final IRole role;
 
   const LessonsView({
     Key? key,
-    this.groupId,
-    this.teacherId,
-  })  : assert(
-          groupId != null || teacherId != null,
-          'groupId != null || teacherId != null',
-        ),
-        super(key: key);
+    required this.role,
+  }) : super(key: key);
 
-  bool get _isForTeachers => teacherId != null;
+  bool get _isForTeachers => role is Teacher;
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => LessonsViewModel(
         context.read<ILessonsService>(),
-        groupId: groupId,
-        teacherId: teacherId,
+        role,
       ),
       onModelReady: (LessonsViewModel model) async => model.onReady(),
       builder: (context, LessonsViewModel model, child) {
@@ -53,17 +49,12 @@ class LessonsView extends StatelessWidget {
           maintainBackLayerState: false,
           frontLayerScrim: Theme.of(context).backgroundColor.withOpacity(0.3),
           appBar: AppBar(
-            title: GestureDetector(
-              onTap: () {
-                Backdrop.of(context).toString();
-              },
-              child: Text(
-                model.lessons?.isNotEmpty ?? false
-                    ? _isForTeachers
-                        ? model.lessons![0].teacher!
-                        : model.lessons![0].group!
-                    : '',
-              ),
+            title: Text(
+              model.lessons?.isNotEmpty ?? false
+                  ? _isForTeachers
+                      ? model.lessons![0].teacher!
+                      : model.lessons![0].group!
+                  : '',
             ),
             actions: <Widget>[
               BackdropToggleButton(
@@ -187,7 +178,9 @@ class LessonsView extends StatelessWidget {
                                           onTap: () {
                                             AutoRouter.of(context).push(
                                               LessonsViewRoute(
-                                                teacherId: lesson.teacherId,
+                                                role: Teacher(
+                                                  id: lesson.teacherId,
+                                                ),
                                               ),
                                             );
                                           },
@@ -227,8 +220,10 @@ class LessonsView extends StatelessWidget {
                                                 onTap: () {
                                                   AutoRouter.of(context).push(
                                                     LessonsViewRoute(
-                                                      groupId:
-                                                          lesson.groups?[i].id,
+                                                      role: Group(
+                                                        id: lesson
+                                                            .groups?[i].id,
+                                                      ),
                                                     ),
                                                   );
                                                 },
@@ -422,7 +417,6 @@ class _PlaceText extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 13,
                   height: 15.85 / 13,
-                  color: AppColors.blackText,
                   fontWeight: FontWeight.w600,
                 ),
               ),
