@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +23,9 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-  await FlutterDisplayMode.setHighRefreshRate();
+  if (Platform.isAndroid) {
+    await FlutterDisplayMode.setHighRefreshRate();
+  }
 
   final directory = await getApplicationDocumentsDirectory();
 
@@ -111,6 +115,22 @@ class MyApp extends StatelessWidget {
           ),
           primaryTextTheme:
               const TextTheme(button: TextStyle(color: Colors.yellow)),
+          inputDecorationTheme: const InputDecorationTheme(
+            border: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppColors.shadowColor),
+            ),
+            hintStyle: TextStyle(
+              fontSize: 16,
+              color: AppColors.grey,
+              fontWeight: FontWeight.w600,
+            ),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppColors.grey, width: 2),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppColors.green),
+            ),
+          ),
           appBarTheme: AppBarTheme(
             elevation: 2,
             shadowColor: AppColors.shadowColor.withOpacity(0.3),

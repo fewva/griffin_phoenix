@@ -29,7 +29,7 @@ class LessonsViewModel extends BaseViewModel {
     if (l != null) lessons = [];
 
     if (l?.isNotEmpty ?? false) {
-      lessons = _role is Group ? _prepareTeacherLessons(l!) : l;
+      lessons = _role is Teacher ? _prepareTeacherLessons(l!) : l;
 
       final DateTime now = DateTime.now();
       // DateTime now = DateTime.parse('2021-12-10 18:28:41.017140');

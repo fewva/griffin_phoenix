@@ -29,7 +29,7 @@ class LessonsService implements ILessonsService {
     try {
       final ApiDTO? result = await _remoteLessonsProvider.getGroupLessons(
         groupId: group.id!,
-        hash: group.lastScheduleHash,
+        // hash: group.lastScheduleHash,
       );
 
       if (result?.status == 0) {
@@ -97,7 +97,8 @@ class LessonsService implements ILessonsService {
   Future<List<Lesson>?> getTeacherLessons({required Teacher teacher}) async {
     try {
       final ApiDTO? result = await _remoteLessonsProvider.getTeacherLessons(
-          teacherId: teacher.id!);
+        teacherId: teacher.id!,
+      );
 
       if (result?.status == 0) {
         final List<Lesson> lessons = result!.response

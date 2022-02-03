@@ -36,10 +36,7 @@ class SelectRoleView extends StatelessWidget {
                 onModelReady: (model) => model.onReady(),
                 builder: (context, model, child) {
                   return SizedBox(
-                    height: MediaQuery.of(context).size.height -
-                        MediaQuery.of(context).padding.top -
-                        MediaQuery.of(context).padding.bottom -
-                        MediaQuery.of(context).padding.vertical,
+                    // height: constraints.maxHeight,
                     child: Column(
                       children: [
                         const SizedBox(height: 76),
@@ -138,7 +135,7 @@ class SelectRoleView extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 56),
+                        const SizedBox(height: 46),
                         SizedBox(
                           width: 134,
                           child: CupertinoButton(
@@ -157,7 +154,7 @@ class SelectRoleView extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const Expanded(child: SizedBox()),
+                        const SizedBox(height: 40),
                         const Text(
                           'needHelp?',
                           style: TextStyle(
@@ -228,18 +225,7 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
         TextField(
           onChanged: widget.onChanged,
           controller: widget.controller,
-          decoration: InputDecoration(
-            hintText: widget.hintText,
-            border: const UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.shadowColor),
-            ),
-            enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.yellow),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.green),
-            ),
-          ),
+          decoration: InputDecoration(hintText: widget.hintText),
         ),
         Offstage(
           offstage: widget.items.isEmpty,
