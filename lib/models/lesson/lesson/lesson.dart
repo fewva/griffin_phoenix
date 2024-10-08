@@ -1,7 +1,5 @@
-import 'package:flutter/foundation.dart';
-import 'package:json_annotation/json_annotation.dart';
-
 import 'package:griffin_phoenix/models/role/group/group.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'lesson.g.dart';
 
@@ -154,35 +152,5 @@ class Lesson {
         other.endTime == endTime &&
         other.subjectId == subjectId &&
         other.groupId != groupId;
-  }
-
-  @override
-  int get hashCode {
-    return uuid.hashCode ^
-        date.hashCode ^
-        timingUuid.hashCode ^
-        startTime.hashCode ^
-        endTime.hashCode ^
-        teacherId.hashCode ^
-        teacher.hashCode ^
-        groupId.hashCode ^
-        facultyId.hashCode ^
-        specialtyId.hashCode ^
-        group.hashCode ^
-        course.hashCode ^
-        subjectId.hashCode ^
-        subject.hashCode ^
-        isElective.hashCode ^
-        selectionCode.hashCode ^
-        isForeign.hashCode ^
-        lessonTypeUuid.hashCode ^
-        lessonType.hashCode ^
-        audienceId.hashCode ^
-        buildingUuid.hashCode ^
-        audience.hashCode ^
-        building.hashCode ^
-        noteUuid.hashCode ^
-        note.hashCode ^
-        groups.hashCode;
   }
 }

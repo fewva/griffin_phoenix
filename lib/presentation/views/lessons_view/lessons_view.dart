@@ -1,44 +1,43 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:backdrop/backdrop.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:griffin_phoenix/internal/constants/constants.dart';
+import 'package:griffin_phoenix/internal/domain/services/lessons/i_lessons_service.dart';
 import 'package:griffin_phoenix/internal/navigation/app_router.gr.dart';
-import 'package:griffin_phoenix/internal/utils/String/extensions.dart';
+import 'package:griffin_phoenix/internal/utils/extensions/date_time.dart';
 import 'package:griffin_phoenix/internal/utils/extensions/theme.dart';
 import 'package:griffin_phoenix/internal/utils/lesson_type_colors.dart';
 import 'package:griffin_phoenix/models/lesson/lesson/lesson.dart';
+import 'package:griffin_phoenix/models/role/group/group.dart';
+import 'package:griffin_phoenix/models/role/irole.dart';
+import 'package:griffin_phoenix/models/role/teacher/teacher.dart';
 import 'package:griffin_phoenix/presentation/shared/custom_calendar_date_picker.dart';
 import 'package:griffin_phoenix/presentation/shared/tapable.dart';
 import 'package:griffin_phoenix/presentation/views/lessons_view/lessons_view_model.dart';
 import 'package:griffin_phoenix/theme/app_colors.dart';
 import 'package:griffin_phoenix/theme/text_styles.dart';
+import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stacked/stacked.dart';
 
-import 'package:collection/collection.dart';
-
 class LessonsView extends StatelessWidget {
-  final int? groupId;
-  final int? teacherId;
+  final IRole role;
 
   const LessonsView({
     Key? key,
-    this.groupId,
-    this.teacherId,
-  })  : assert(groupId == null || teacherId == null),
-        super(key: key);
+    required this.role,
+  }) : super(key: key);
 
-  bool get _isForTeachers => teacherId != null;
+  bool get _isForTeachers => role is Teacher;
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => LessonsViewModel(
-        groupId: groupId,
-        teacherId: teacherId,
+        context.read<ILessonsService>(),
+        role,
       ),
       onModelReady: (LessonsViewModel model) async => model.onReady(),
       builder: (context, LessonsViewModel model, child) {
@@ -50,17 +49,12 @@ class LessonsView extends StatelessWidget {
           maintainBackLayerState: false,
           frontLayerScrim: Theme.of(context).backgroundColor.withOpacity(0.3),
           appBar: AppBar(
-            title: GestureDetector(
-              onTap: () {
-                Backdrop.of(context).toString();
-              },
-              child: Text(
-                model.lessons != null
-                    ? _isForTeachers
-                        ? model.lessons![0].teacher!
-                        : model.lessons![0].group!
-                    : '',
-              ),
+            title: Text(
+              model.lessons?.isNotEmpty ?? false
+                  ? _isForTeachers
+                      ? model.lessons![0].teacher!
+                      : model.lessons![0].group!
+                  : '',
             ),
             actions: <Widget>[
               BackdropToggleButton(
@@ -68,44 +62,31 @@ class LessonsView extends StatelessWidget {
               ),
             ],
           ),
-          // floatingActionButton: FloatingActionButton(
-          //   onPressed: () {
-          //     final newD = groupBy(model.lessons!, (Lesson e) => e.date);
-          //     print('newD: ${newD}');
-          //   },
-          // ),
           frontLayerBorderRadius: BorderRadius.circular(0),
           backLayer: model.lessons != null
               ? BackLayer(
                   lessons: model.lessons,
-                  onDateChanged: (value) {
-                    print('value: ${value}');
-                    model.scrollController.scrollTo(
-                      index: value.day,
-                      duration: const Duration(milliseconds: 200),
-                    );
-                  },
-                  todayIndex: model.todayIndex,
+                  onDateChanged: model.onDateChanged,
+                  nextIndex: model.nextIndex,
                 )
               : const SizedBox(),
           // backLayerBackgroundColor: AppColors.white,
           frontLayer: Builder(
             builder: (_) {
-              DateTime? lastDate;
-              bool isNewDate = false;
-
-              if (model.lessons != null) {
+              if (model.lessons?.isNotEmpty ?? false) {
                 final List<Lesson> lessons = model.lessons!;
+                bool isNewDate = false;
 
                 return ScrollablePositionedList.builder(
                   itemCount: lessons.length,
-                  initialScrollIndex: model.todayIndex!,
+                  initialScrollIndex: model.nextIndex!,
                   itemScrollController: model.scrollController,
-                  // padding: const EdgeInsets.symmetric(vertical: 20),
+                  padding: const EdgeInsets.only(bottom: 20),
                   itemBuilder: (context, index) {
                     final Lesson lesson = lessons[index];
-                    if (lastDate != lesson.date) {
-                      lastDate = lesson.date;
+                    final Lesson? prevLesson =
+                        index != 0 ? lessons[index - 1] : null;
+                    if (lesson.date != prevLesson?.date) {
                       isNewDate = true;
                     } else {
                       isNewDate = false;
@@ -113,35 +94,35 @@ class LessonsView extends StatelessWidget {
 
                     return Column(
                       children: [
-                        if (isNewDate)
-                          Offstage(
-                            offstage: !isNewDate,
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                top: 17,
-                                bottom: index == model.todayIndex ? 15 : 33,
-                                // bottom:
-                                //     index == model.todayIndex ? 15 : 33,
-                              ),
-                              child: Text(
-                                lesson.date.toReadableDate!,
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
+                        Offstage(
+                          offstage: !isNewDate,
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              top: 17,
+                              bottom: index == model.nextIndex ? 15 : 33,
+                              // bottom:
+                              //     index == model.nextIndex ? 15 : 33,
+                            ),
+                            child: Text(
+                              lesson.date.toReadableDate!,
+                              style: Theme.of(context).textTheme.headline6,
                             ),
                           ),
+                        ),
                         if (!isNewDate) const SizedBox(height: 12),
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: 16),
                           padding: EdgeInsets.only(
                             left: 14,
                             right: 14,
-                            top: index == model.todayIndex ? 20 : 0,
-                            bottom: index == model.todayIndex ? 25 : 17,
+                            top: index == model.nextIndex ? 20 : 0,
+                            bottom: index == model.nextIndex ? 25 : 17,
                             // top: 20,
                             // bottom: 25,
                           ),
-                          decoration: index == model.todayIndex
-                              // decoration: index == model.todayIndex || 1 == 1
+                          decoration: index == model.nextIndex &&
+                                  model.showNextPair
+                              // decoration: index == model.nextIndex || 1 == 1
                               ? BoxDecoration(
                                   color: Theme.of(context).backgroundColor,
                                   borderRadius: BorderRadius.circular(6),
@@ -166,7 +147,7 @@ class LessonsView extends StatelessWidget {
                                     color: lessonTypeToColor(
                                       lesson.lessonType,
                                       index: index,
-                                      todayIndex: model.todayIndex,
+                                      nextIndex: model.nextIndex,
                                       isDarkTheme:
                                           Theme.of(context).isDarkTheme,
                                     ),
@@ -182,7 +163,7 @@ class LessonsView extends StatelessWidget {
                                       _TypeAndTime(
                                         lesson: lesson,
                                         index: index,
-                                        todayIndex: model.todayIndex ?? 0,
+                                        nextIndex: model.nextIndex ?? 0,
                                       ),
                                       const SizedBox(height: 8),
                                       if (lesson.subject != null)
@@ -195,10 +176,11 @@ class LessonsView extends StatelessWidget {
                                           lesson.teacher != null)
                                         Tapable(
                                           onTap: () {
-                                            print(lesson.teacherId);
                                             AutoRouter.of(context).push(
                                               LessonsViewRoute(
-                                                teacherId: lesson.teacherId,
+                                                role: Teacher(
+                                                  id: lesson.teacherId,
+                                                ),
                                               ),
                                             );
                                           },
@@ -238,8 +220,10 @@ class LessonsView extends StatelessWidget {
                                                 onTap: () {
                                                   AutoRouter.of(context).push(
                                                     LessonsViewRoute(
-                                                      groupId:
-                                                          lesson.groups?[i].id,
+                                                      role: Group(
+                                                        id: lesson
+                                                            .groups?[i].id,
+                                                      ),
                                                     ),
                                                   );
                                                 },
@@ -247,36 +231,6 @@ class LessonsView extends StatelessWidget {
                                             ),
                                           ),
                                         ),
-                                      // Tapable(
-                                      //   onTap: () {
-                                      //     print(lesson.groupId);
-                                      //     AutoRouter.of(context).push(
-                                      //       LessonsViewRoute(
-                                      //         groupId: lesson.groupId,
-                                      //       ),
-                                      //     );
-                                      //   },
-                                      //   child: Padding(
-                                      //     padding:
-                                      //         const EdgeInsets.only(top: 15),
-                                      //     child: Wrap(
-                                      //       children: List.generate(
-                                      //         lesson.groups!.length,
-                                      //         (index) => Text(
-                                      //           lesson.groups![index].name!,
-                                      //         ),
-                                      //       ),
-                                      //       // children: [
-                                      //       //   Text(
-                                      //       //     lesson.group!,
-                                      //       //     style: Theme.of(context)
-                                      //       //         .textTheme
-                                      //       //         .caption,
-                                      //       //   ),
-                                      //       // ],
-                                      //     ),
-                                      //   ),
-                                      // ),
                                     ],
                                   ),
                                 )
@@ -289,6 +243,15 @@ class LessonsView extends StatelessWidget {
                   },
                 );
               }
+              if (model.lessons != null && model.lessons!.isEmpty) {
+                return Center(
+                  child: const Text(
+                    'noSchedule',
+                    style: TextStyle(fontSize: 20),
+                  ).tr(),
+                );
+              }
+
               return const LessonsShimmer();
             },
           ),
@@ -303,11 +266,11 @@ class BackLayer extends StatelessWidget {
     Key? key,
     required this.lessons,
     required this.onDateChanged,
-    required this.todayIndex,
+    required this.nextIndex,
   }) : super(key: key);
 
   final List<Lesson>? lessons;
-  final int? todayIndex;
+  final int? nextIndex;
   final ValueChanged<DateTime> onDateChanged;
 
   @override
@@ -326,17 +289,14 @@ class BackLayer extends StatelessWidget {
                 ),
           ),
           child: CustomCalendarDatePicker(
-            initialDate: lessons?[todayIndex ?? 0].date ?? DateTime.now(),
+            initialDate: lessons?[nextIndex ?? 0].date ?? DateTime.now(),
             firstDate: lessons?.first.date ?? DateTime.now(),
             lastDate: lessons?.last.date ?? DateTime.now(),
             currentDate: DateTime.now(),
             onDateChanged: onDateChanged,
             selectableDayPredicate: (day) {
               final res = lessons!.indexWhere(
-                (Lesson element) =>
-                    element.date!.day == day.day &&
-                    element.date!.month == day.month &&
-                    element.date!.year == day.year,
+                (Lesson element) => element.date.onTheSameDay(day),
               );
 
               return res != -1;
@@ -353,12 +313,12 @@ class _TypeAndTime extends StatelessWidget {
     Key? key,
     required this.lesson,
     required this.index,
-    required this.todayIndex,
+    required this.nextIndex,
   }) : super(key: key);
 
   final Lesson lesson;
   final int index;
-  final int todayIndex;
+  final int nextIndex;
 
   String? _formatedTime(String? start, String? end) {
     if (start != null && end != null) {
@@ -388,7 +348,7 @@ class _TypeAndTime extends StatelessWidget {
               color: lessonTypeToColor(
                 lesson.lessonType,
                 index: index,
-                todayIndex: todayIndex,
+                nextIndex: nextIndex,
                 isDarkTheme: Theme.of(context).isDarkTheme,
               ),
             ),
@@ -421,7 +381,7 @@ class _TypeAndTime extends StatelessWidget {
         // if (lesson.isElective ?? false)
         Text(
           addictionalData ?? '',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 13,
             height: 15.9 / 13,
             fontWeight: FontWeight.w500,
@@ -457,7 +417,6 @@ class _PlaceText extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 13,
                   height: 15.85 / 13,
-                  color: AppColors.blackText,
                   fontWeight: FontWeight.w600,
                 ),
               ),

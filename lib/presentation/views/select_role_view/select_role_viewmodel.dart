@@ -1,20 +1,18 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:griffin_phoenix/internal/domain/network/core_api.dart';
-import 'package:griffin_phoenix/internal/domain/services/select_role_service.dart';
-import 'package:griffin_phoenix/internal/locator.dart';
-import 'package:griffin_phoenix/internal/navigation/app_router.gr.dart';
+import 'package:griffin_phoenix/internal/domain/services/select_role/i_select_role_service.dart';
+import 'package:griffin_phoenix/internal/utils/debug_print.dart';
 import 'package:griffin_phoenix/models/role/group/group.dart';
-import 'package:griffin_phoenix/models/role/i_role.dart';
+import 'package:griffin_phoenix/models/role/irole.dart';
 import 'package:griffin_phoenix/models/role/teacher/teacher.dart';
 import 'package:griffin_phoenix/presentation/shared/app_button.dart';
-import 'package:griffin_phoenix/theme/app_colors.dart';
 import 'package:stacked/stacked.dart';
 
 class SelectRoleViewModel extends BaseViewModel {
-  final _service = locator<SelectRoleService>();
+  final ISelectRoleService _service;
+
+  SelectRoleViewModel(this._service);
 
   final TextEditingController groupTextController = TextEditingController();
   final TextEditingController teacherTextController = TextEditingController();
@@ -25,12 +23,15 @@ class SelectRoleViewModel extends BaseViewModel {
   List<Group> groupList = [];
   List<Teacher> teacherList = [];
 
-  Role? selectedRole;
+  IRole? selectedRole;
 
   void changePage(int page) {
     // currentPage.value = page;
-    pageController.animateToPage(page,
-        duration: const Duration(milliseconds: 150), curve: Curves.easeIn);
+    pageController.animateToPage(
+      page,
+      duration: const Duration(milliseconds: 150),
+      curve: Curves.easeIn,
+    );
   }
 
   void onReady() {
@@ -39,7 +40,7 @@ class SelectRoleViewModel extends BaseViewModel {
     });
   }
 
-  void selectGroup(Role group) {
+  void selectGroup(IRole group) {
     selectedRole = group;
     groupTextController
       ..text = group.name!
@@ -48,7 +49,7 @@ class SelectRoleViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  void selectTeacher(Role teacher) {
+  void selectTeacher(IRole teacher) {
     selectedRole = teacher;
     teacherTextController
       ..text = teacher.name!
@@ -107,8 +108,9 @@ class SelectRoleViewModel extends BaseViewModel {
                   label: tr('close').toUpperCase(),
                   onPressed: () {
                     AutoRouter.of(context).current;
-                    print(
-                        'AutoRouter.of(context).current: ${AutoRouter.of(context).current}');
+                    printWarning(
+                      'AutoRouter.of(context).current: ${AutoRouter.of(context).current}',
+                    );
                     Navigator.of(context).pop();
                   },
                 ),

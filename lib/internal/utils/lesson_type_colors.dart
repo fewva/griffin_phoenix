@@ -5,11 +5,11 @@ import 'package:griffin_phoenix/theme/app_colors.dart';
 Color lessonTypeToColor(
   String? type, {
   int? index,
-  int? todayIndex,
+  int? nextIndex,
   bool isDarkTheme = false,
 }) {
-  if (index != null && todayIndex != null) {
-    if (index < todayIndex) return AppColors.grey;
+  if (index != null && nextIndex != null) {
+    if (index < nextIndex) return AppColors.grey;
   }
 
   switch (type) {

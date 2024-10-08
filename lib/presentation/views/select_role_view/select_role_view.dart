@@ -1,10 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:griffin_phoenix/models/role/i_role.dart';
+import 'package:griffin_phoenix/internal/domain/services/select_role/i_select_role_service.dart';
+import 'package:griffin_phoenix/internal/utils/extensions/theme.dart';
+import 'package:griffin_phoenix/models/role/irole.dart';
 import 'package:griffin_phoenix/presentation/views/select_role_view/select_role_viewmodel.dart';
 import 'package:griffin_phoenix/theme/app_colors.dart';
 import 'package:griffin_phoenix/theme/app_icons.dart';
+import 'package:provider/provider.dart';
 import 'package:stacked/stacked.dart';
 
 const TextStyle _roleTextStyle = TextStyle(
@@ -19,7 +22,7 @@ class SelectRoleView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final isDarkTheme = Theme.of(context).isDarkTheme;
 
     return Scaffold(
       body: SafeArea(
@@ -27,14 +30,13 @@ class SelectRoleView extends StatelessWidget {
           builder: (context, constraints) {
             return SingleChildScrollView(
               child: ViewModelBuilder<SelectRoleViewModel>.reactive(
-                viewModelBuilder: () => SelectRoleViewModel(),
+                viewModelBuilder: () => SelectRoleViewModel(
+                  context.read<ISelectRoleService>(),
+                ),
                 onModelReady: (model) => model.onReady(),
                 builder: (context, model, child) {
                   return SizedBox(
-                    height: MediaQuery.of(context).size.height -
-                        MediaQuery.of(context).padding.top -
-                        MediaQuery.of(context).padding.bottom -
-                        MediaQuery.of(context).padding.vertical,
+                    // height: constraints.maxHeight,
                     child: Column(
                       children: [
                         const SizedBox(height: 76),
@@ -133,7 +135,7 @@ class SelectRoleView extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 56),
+                        const SizedBox(height: 46),
                         SizedBox(
                           width: 134,
                           child: CupertinoButton(
@@ -152,7 +154,7 @@ class SelectRoleView extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const Expanded(child: SizedBox()),
+                        const SizedBox(height: 40),
                         const Text(
                           'needHelp?',
                           style: TextStyle(
@@ -207,9 +209,9 @@ class ExpandableTextField extends StatefulWidget {
 
   final TextEditingController controller;
   final String hintText;
-  final List<Role> items;
+  final List<IRole> items;
   final ValueChanged<String> onChanged;
-  final ValueChanged<Role> onSelect;
+  final ValueChanged<IRole> onSelect;
 
   @override
   State<ExpandableTextField> createState() => _ExpandableTextFieldState();
@@ -223,18 +225,7 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
         TextField(
           onChanged: widget.onChanged,
           controller: widget.controller,
-          decoration: InputDecoration(
-            hintText: widget.hintText,
-            border: const UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.shadowColor),
-            ),
-            enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.yellow),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.green),
-            ),
-          ),
+          decoration: InputDecoration(hintText: widget.hintText),
         ),
         Offstage(
           offstage: widget.items.isEmpty,

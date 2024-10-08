@@ -1,6 +1,6 @@
                 // return ScrollablePositionedList.separated(
                 //   itemCount: lessons.length,
-                //   initialScrollIndex: model.todayIndex!,
+                //   initialScrollIndex: model.nextIndex!,
                 //   padding: const EdgeInsets.symmetric(vertical: 20),
                 //   itemBuilder: (context, index) {
                 //     final Lesson lesson = lessons[index];
@@ -23,17 +23,17 @@
                 //             ),
                 //           ),
                 //         SizedBox(
-                //           height: index + 1 == model.todayIndex ? 15 : 35,
+                //           height: index + 1 == model.nextIndex ? 15 : 35,
                 //         ),
                 //         Container(
                 //           margin: const EdgeInsets.symmetric(horizontal: 16),
                 //           padding: EdgeInsets.only(
                 //             left: 14,
                 //             right: 14,
-                //             top: index == model.todayIndex ? 20 : 0,
-                //             bottom: index == model.todayIndex ? 25 : 0,
+                //             top: index == model.nextIndex ? 20 : 0,
+                //             bottom: index == model.nextIndex ? 25 : 0,
                 //           ),
-                //           decoration: index == model.todayIndex
+                //           decoration: index == model.nextIndex
                 //               ? BoxDecoration(
                 //                   color: AppColors.white,
                 //                   borderRadius: BorderRadius.circular(6),
@@ -134,3 +134,6 @@
                 //     }
                 //   },
                 // );
+
+
+                
